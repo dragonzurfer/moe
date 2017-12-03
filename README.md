@@ -1,6 +1,6 @@
 ![Reading 6th Grade Level](http://forthebadge.com/images/badges/reading-6th-grade-level.svg)
 ![No Ragrets](http://forthebadge.com/images/badges/no-ragrets.svg)
-![](https://github.com/ashleymcnamara/gophers/blob/master/GO_BUILD.png?raw=true width=100 height=100)
+![](https://github.com/ashleymcnamara/gophers/blob/master/GO_BUILD.png?raw=true | width=100 height=100)
 # moe
 
 Get All the information you need on the ***ANIME's*** you love :heart: at one place
