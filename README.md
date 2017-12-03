@@ -15,9 +15,9 @@ go get github.com/dragonzurfer/moe
 
 Forgot those hard Japanese names ?
 
-![demo1](https://asciinema.org/a/ABVJRbAcvdbXIUneVRKt2UJaq)
+[![asciicast](https://asciinema.org/a/ABVJRbAcvdbXIUneVRKt2UJaq.png)](https://asciinema.org/a/ABVJRbAcvdbXIUneVRKt2UJaq)
 
-![demo2](https://asciinema.org/a/rfyFAkxc8vRwjAr0UvhbhQ5wO)
+[![asciicast](https://asciinema.org/a/rfyFAkxc8vRwjAr0UvhbhQ5wO.png)](https://asciinema.org/a/rfyFAkxc8vRwjAr0UvhbhQ5wO)
 
 try moe -help for other params
 
