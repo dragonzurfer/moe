@@ -13,11 +13,11 @@ go get github.com/dragonzurfer/moe
 
 #### Usage
 
-Forgot those hard Japnese names ?
+Forgot those hard Japanese names ?
 
-(https://asciinema.org/a/ABVJRbAcvdbXIUneVRKt2UJaq)
+![demo1](https://asciinema.org/a/ABVJRbAcvdbXIUneVRKt2UJaq)
 
-(https://asciinema.org/a/rfyFAkxc8vRwjAr0UvhbhQ5wO)
+![demo2](https://asciinema.org/a/rfyFAkxc8vRwjAr0UvhbhQ5wO)
 
 try moe -help for other params
 
