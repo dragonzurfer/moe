@@ -23,10 +23,13 @@ try moe -help for other params
 
 #### Contributions
 
-..* Fork It
-..* Clone It
-..* git checkout -b YOUR_FEATURE
-..* give a pull request
+..*Fork It
+
+..*Clone It
+
+..*git checkout -b YOUR_FEATURE
+
+..*give a pull request
 
 #### Installation
 
