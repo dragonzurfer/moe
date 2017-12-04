@@ -282,16 +282,6 @@ func fetchDetails(name string) bool {
 	if seasonal == "CURRENT" {
 		seasonal = ""
 	}
-	seasonURL := "https://myannimelist.net/anime/season/" + seasonal
-	resp, err = getContent(seasonURL)
-	if err {
-		return false
-	}
-
-	cleaninfo, errstr = html2text.FromString(resp, html2text.Options{PrettyTables: true})
-	if errstr != nil {
-		panic(err)
-	}
 
 	return true
 }
