@@ -14,7 +14,7 @@ import (
 
 // command params
 var (
-	name, AnimeURL                                     string
+	name, AnimeURL, seasonal                           string
 	score, rank, synopsis, info, songs, EP, aired, all bool
 	MALsearch                                          = "https://myanimelist.net/search/all?q="
 )
@@ -22,7 +22,7 @@ var (
 // results
 var (
 	scoreres, rankres, statres, OPres, EDres, EPres, airedres string
-	synopsisres, songsres                                     []string
+	synopsisres, songsres, seasonalres                        []string
 	infores                                                   = make(map[string]string)
 )
 
@@ -42,6 +42,7 @@ var (
 // bind flags to params
 func bindFlags() {
 	flag.StringVar(&name, "name", "", "Give Name ex: DeathNode, \"Your Lie In April\"")
+	flag.StringVar(&seasonal, "seasonal", "", "<SEASON> <YEAR> ex: summer 2017, winter 2016 or Just leave blank for current season")
 	flag.BoolVar(&score, "score", false, "Get Score")
 	flag.BoolVar(&rank, "rank", false, "Get Rank")
 	flag.BoolVar(&synopsis, "synopsis", false, "Get Synopsis")
@@ -81,7 +82,7 @@ func check(s string) bool {
 	return false
 }
 
-// replace 
+// replace
 func Rep(s *string, rep [][]string) {
 	var temp string = *s
 	for i := 0; i < len(rep); i++ {
@@ -105,6 +106,15 @@ func PrintParams() {
 				continue
 			}
 			boldwhite.Printf(": %v\n", value)
+		}
+		fmt.Printf("\n")
+	}
+
+	if seasonal != "" {
+		boldblue.Printf("Animes of %v season \n-------------------\n", seasonal)
+		for index, anime := range seasonalres {
+			boldwhite.Printf("%v.", index)
+			fmt.Printf(" %v\n", anime)
 		}
 		fmt.Printf("\n")
 	}
@@ -148,6 +158,46 @@ func PrintParams() {
 		boldwhite.Println(EPres)
 		fmt.Printf("\n")
 	}
+}
+
+// fetch seasonl animes
+func fetchDetailsSeason(seasonal string) bool {
+	regexseason := `TV \(New\)(.|\n)*?ONA`
+	seasonalre := regexp.MustCompile(regexseason)
+	var seasonURL string
+	if seasonal == "CURRENT" {
+		seasonURL = "https://myanimelist.net/anime/season"
+	} else {
+		temp := strings.Split(seasonal, " ")
+		seasonURL = "https://myanimelist.net/anime/season/" + temp[1] + "/" + temp[0]
+	}
+
+	resp, err := getContent(seasonURL)
+	if err {
+		return false
+	}
+
+	cleaninfo, errstr := html2text.FromString(resp, html2text.Options{PrettyTables: true})
+	if errstr != nil {
+		panic(err)
+	}
+
+	cleaninfo = seasonalre.FindString(cleaninfo)
+	regex := `https://myanimelist.net/anime/[0-9]*/([^\s]*)`
+	re := regexp.MustCompile(regex)
+	animes := re.FindAllString(cleaninfo, -1)
+	rep := [][]string{{"-", " "}, {"_", " "}}
+	m := make(map[string]bool)
+	for _, anime := range animes {
+		res := strings.Split(anime, "/")
+		Rep(&res[5], rep)
+		if !m[res[5]] {
+			seasonalres = append(seasonalres, res[5])
+			m[res[5]] = true
+		}
+	}
+
+	return true
 }
 
 // Get anime details from MAL
@@ -228,6 +278,21 @@ func fetchDetails(name string) bool {
 	// Extract aired date
 	airedres = m["Aired"]
 
+	// Extract seasonal anime
+	if seasonal == "CURRENT" {
+		seasonal = ""
+	}
+	seasonURL := "https://myannimelist.net/anime/season/" + seasonal
+	resp, err = getContent(seasonURL)
+	if err {
+		return false
+	}
+
+	cleaninfo, errstr = html2text.FromString(resp, html2text.Options{PrettyTables: true})
+	if errstr != nil {
+		panic(err)
+	}
+
 	return true
 }
 
@@ -285,6 +350,10 @@ func main() {
 			if fetchDetails(name) {
 				PrintParams()
 			}
+		}
+	} else if seasonal != "" {
+		if fetchDetailsSeason(seasonal) {
+			PrintParams()
 		}
 	}
 }
