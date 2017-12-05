@@ -16,6 +16,8 @@ or get your [binaries](https://github.com/dragonzurfer/moe/releases/tag/1.0.0)!
 
 Forgot those hard Japanese names ?
 
+![Demo 3](https://github.com/dragonzurfer/moe/blob/master/demo/demo3.gif)
+
 ![Demo 1](https://github.com/dragonzurfer/moe/blob/master/demo/demo1.gif)
 
 ![Demo 2](https://github.com/dragonzurfer/moe/blob/master/demo/demo2.gif)
