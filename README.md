@@ -16,9 +16,10 @@ or get your [binaries](https://github.com/dragonzurfer/moe/releases/tag/1.0.0)!
 
 Forgot those hard Japanese names ?
 
-[![asciicast](https://asciinema.org/a/ABVJRbAcvdbXIUneVRKt2UJaq.png)](https://asciinema.org/a/ABVJRbAcvdbXIUneVRKt2UJaq)
+![Demo 1](https://github.com/dragonzurfer/moe/blob/master/demo/demo1.gif)
 
-[![asciicast](https://asciinema.org/a/rfyFAkxc8vRwjAr0UvhbhQ5wO.png)](https://asciinema.org/a/rfyFAkxc8vRwjAr0UvhbhQ5wO)
+![Demo 2](https://github.com/dragonzurfer/moe/blob/master/demo/demo2.gif)
+
 
 try moe -help for other params
 
@@ -26,11 +27,13 @@ try moe -help for other params
 
 1. Fork It
 
-2. Clone It
+2. Clone It ```git clone https://github.com/<YOUR_HANDLENAME>/moe.git```
 
-3. git checkout -b YOUR_FEATURE
+3. Get your own branch```git checkout -b YOUR_FEATURE```
 
-4. give a pull request
+4. Make changes and commit ```git commit -m "Add YOUR_FEATURE"```
+
+5. Finally give a pull request. Dont know how ? check it out [here](https://help.github.com/articles/creating-a-pull-request/)
 
 
 
