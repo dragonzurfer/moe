@@ -14,9 +14,10 @@ import (
 
 // command params
 var (
-	name, AnimeURL, seasonal                           string
+	name, AnimeURL, AnimeVideoURL, seasonal, video     string
 	score, rank, synopsis, info, songs, EP, aired, all bool
 	MALsearch                                          = "https://myanimelist.net/search/all?q="
+	VIDEOsearch                                        = "https://9anime.is/search?keyword="
 )
 
 // results
@@ -43,6 +44,7 @@ var (
 func bindFlags() {
 	flag.StringVar(&name, "name", "", "Give Name ex: DeathNode, \"Your Lie In April\"")
 	flag.StringVar(&seasonal, "seasonal", "", "<SEASON> <YEAR> ex: summer 2017, winter 2016 or Just leave blank for current season")
+	flag.StringVar(&video, "video", "", "<EPISODE NUMBER> ex: 1, 9 etc or \"all\" to get all the episodes")
 	flag.BoolVar(&score, "score", false, "Get Score")
 	flag.BoolVar(&rank, "rank", false, "Get Rank")
 	flag.BoolVar(&synopsis, "synopsis", false, "Get Synopsis")
@@ -160,6 +162,19 @@ func PrintParams() {
 	}
 }
 
+// Check if No results found
+func ResultCheckZero(length int, FLAG, query string) bool {
+	if length == 0 {
+		boldred.Printf("Could not find any results for %v: %v\n", FLAG, query)
+		return false
+	}
+	return true
+}
+
+func downloadVideo() {
+
+}
+
 // fetch seasonl animes
 func fetchDetailsSeason(seasonal string) bool {
 	regexseason := `TV \(New\)(.|\n)*?ONA`
@@ -201,7 +216,7 @@ func fetchDetailsSeason(seasonal string) bool {
 }
 
 // Get anime details from MAL
-func fetchDetails(name string) bool {
+func fetchDetails() bool {
 
 	resp, err := getContent(AnimeURL)
 	if err {
@@ -289,7 +304,7 @@ func fetchDetails(name string) bool {
 // Search given a name
 // true value indicates matching name found
 // shows search results if not found
-func Search(name string) bool {
+func Search() bool {
 	searchURL := MALsearch + name
 	name = strings.ToLower(name)
 
@@ -306,8 +321,9 @@ func Search(name string) bool {
 	regex = `https://myanimelist.net/anime/[0-9]*/([^"/]*)`
 	re2 := regexp.MustCompile(regex)
 	results2 := re2.FindAllStringSubmatch(results, -1)
+	var foundAnime, foundVideoAnime bool
 
-	m := make(map[string]bool)
+	animeUrlMap := make(map[string]bool)
 	for _, res := range results2 {
 		res[1] = strings.Replace(res[1], "_", " ", -1)
 		res[1] = strings.Replace(res[1], "  ", " ", -1) // replace double space
@@ -315,30 +331,89 @@ func Search(name string) bool {
 		if res[1] == name {
 			// set anime url to fetch results
 			AnimeURL = res[0]
+			foundAnime = true
+		}
+		animeUrlMap[res[1]] = true
+	}
+
+	if !foundAnime && video == "" {
+		index := 0
+		boldyellow.Println("Did you mean :")
+		boldyellow.Println("---------------")
+		for key := range animeUrlMap {
+			index += 1
+			green.Printf("%v.", index)
+			fmt.Printf(" %v\n", key)
+		}
+	}
+
+	// Search for episode videos
+	if video == "" {
+		return false
+	}
+
+	searchName := strings.Replace(name, " ", "%20", -1)
+	searchURL = VIDEOsearch + searchName
+	resp, err = getContent(searchURL)
+
+	if err {
+		return false
+	}
+
+	regex = `https://9anime.is/watch/([^"]*)`
+	re3 := regexp.MustCompile(regex)
+	resultsVideo := re3.FindAllStringSubmatch(resp, -1)
+
+	if !ResultCheckZero(len(resultsVideo), "-video", name) {
+		return false
+	}
+
+	searchName = strings.Replace(searchName, "%20", "-", -1)
+	animeVideoUrlMap := make(map[string]bool)
+	for _, anime := range resultsVideo {
+		dotpos := 0
+		if len(anime) < 2 {
+			continue
+		}
+		cleanname := ""
+		for i := 0; i < len(anime[1]); i++ {
+			if anime[1][i] == '.' {
+				dotpos = i
+				cleanname = strings.Replace(anime[1][:dotpos], "-", " ", -1)
+				animeVideoUrlMap[cleanname] = true
+				break
+			}
+		}
+		if cleanname == searchName {
+			foundVideoAnime = true
+			AnimeVideoURL = anime[0]
 			return true
 		}
-		m[res[1]] = true
 	}
 
-	index := 0
-	boldyellow.Println("Did you mean :")
-	boldyellow.Println("---------------")
-	for key := range m {
-		index += 1
-		green.Printf("%v.", index)
-		fmt.Printf(" %v\n", key)
+	if !foundVideoAnime {
+		index := 0
+		boldyellow.Println("Video results found for :")
+		boldyellow.Println("---------------")
+		for key := range animeVideoUrlMap {
+			index += 1
+			green.Printf("%v.", index)
+			fmt.Printf(" %v\n", key)
+		}
 	}
-
 	return false
 }
 
 func main() {
 	bindFlags()
 	if name != "" {
-		success := Search(name)
+		success := Search()
 		if success {
-			if fetchDetails(name) {
+			if fetchDetails() {
 				PrintParams()
+			}
+			if video == "" {
+				downloadVideo()
 			}
 		}
 	} else if seasonal != "" {
