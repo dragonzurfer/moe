@@ -193,8 +193,8 @@ func downloadVideo() {
 	results := serverg4re.FindAllStringSubmatch(htmlcontent, -1)
 	episodeURL := make(map[int]string)
 	videoSite := `https://9anime.is`
-	startCheck := false // to check if the episode number started from 1 again, indicating a different server
 	totalEpisodes := -1
+
 	// map episode number to a url for download
 	for _, result := range results {
 		if result[1] == "" {
@@ -202,19 +202,17 @@ func downloadVideo() {
 		}
 
 		episodeNumber, converror := strconv.Atoi(result[1])
-		episodeURL[episodeNumber] = videoSite + result[2]
 
 		if converror != nil {
 			fmt.Println("Error downloading ...")
 			return
 		}
 
-		// if episodeNumber went 1 the second time break
-		if episodeNumber == 1 {
-			startCheck = true
-		} else if startCheck && episodeNumber == 1 {
+		if episodeURL[episodeNumber] != "" {
 			break
 		}
+
+		episodeURL[episodeNumber] = videoSite + result[2]
 		totalEpisodes = episodeNumber
 	}
 
@@ -224,6 +222,9 @@ func downloadVideo() {
 	}
 
 	boldgreen.Println(totalEpisodes)
+	for k, v := range episodeURL {
+		fmt.Println(k, v)
+	}
 }
 
 // fetch seasonl animes
@@ -472,7 +473,7 @@ func Search() bool {
 func main() {
 	bindFlags()
 	if name != "" {
-		if !synopsis && !score && !rank && !info && !EP && !aired && !songs {
+		if !synopsis && !score && !rank && !info && !EP && !aired && !songs && !all && len(video) == 0 {
 			boldred.Println("No params found")
 			return
 		}
