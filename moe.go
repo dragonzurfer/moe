@@ -173,7 +173,25 @@ func emptyResult(length int, FLAG, query string) bool {
 }
 
 func downloadVideo() {
-	// Get number of episodes on AnimeVideoURL page
+	// Get number of episodes on AnimeVideoURL page and set from and to
+	var from, to int
+	var err1, err2 error
+
+	if video != "all" {
+
+		slicedrange := strings.Split(video, "-")
+		from, err1 = strconv.Atoi(slicedrange[0])
+		to, err2 = strconv.Atoi(slicedrange[1])
+
+		if err1 != nil || err2 != nil {
+			boldred.Println("Invalid range in -video", video)
+			return
+		}
+
+		if from > to {
+			from, to = to, from
+		}
+	}
 
 	resp, err := getContent(AnimeVideoURL)
 
@@ -221,10 +239,17 @@ func downloadVideo() {
 		return
 	}
 
-	boldgreen.Println(totalEpisodes)
-	for k, v := range episodeURL {
-		fmt.Println(k, v)
+	// set range for all
+	if video == "all" {
+		from = 1
+		to = totalEpisodes
 	}
+
+	// if range is greater than total episode set to max
+	if to > totalEpisodes {
+		to = totalEpisodes
+	}
+	fmt.Println(from, to)
 }
 
 // fetch seasonl animes
