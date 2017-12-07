@@ -472,6 +472,10 @@ func Search() bool {
 func main() {
 	bindFlags()
 	if name != "" {
+		if !synopsis && !score && !rank && !info && !EP && !aired && !songs {
+			boldred.Println("No params found")
+			return
+		}
 		success := Search()
 		if success {
 			if fetchDetails() {
