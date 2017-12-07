@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -172,7 +173,57 @@ func ResultCheckZero(length int, FLAG, query string) bool {
 }
 
 func downloadVideo() {
+	// Get number of episodes on AnimeVideoURL page
 
+	resp, err := getContent(AnimeVideoURL)
+
+	if err {
+		return
+	}
+
+	htmlcontent, errstr := html2text.FromString(resp)
+
+	if errstr != nil {
+		panic(errstr)
+	}
+	htmlcontent = strings.Replace(htmlcontent, " ", "", -1)
+	regexServerG4 := (`ServerG4[^\*]*|\*(\d+)\(([^\)]*)`)
+	serverg4re := regexp.MustCompile(regexServerG4)
+
+	results := serverg4re.FindAllStringSubmatch(htmlcontent, -1)
+	episodeURL := make(map[int]string)
+	videoSite := `https://9anime.is`
+	startCheck := false // to check if the episode number started from 1 again, indicating a different server
+	totalEpisodes := -1
+	// map episode number to a url for download
+	for _, result := range results {
+		if result[1] == "" {
+			continue
+		}
+
+		episodeNumber, converror := strconv.Atoi(result[1])
+		episodeURL[episodeNumber] = videoSite + result[2]
+
+		if converror != nil {
+			fmt.Println("Error downloading ...")
+			return
+		}
+
+		// if episodeNumber went 1 the second time break
+		if episodeNumber == 1 {
+			startCheck = true
+		} else if startCheck && episodeNumber == 1 {
+			break
+		}
+		totalEpisodes = episodeNumber
+	}
+
+	if totalEpisodes == -1 {
+		fmt.Println("Error downloading Anime could'nt find any downloads")
+		return
+	}
+
+	boldgreen.Println(totalEpisodes)
 }
 
 // fetch seasonl animes
@@ -412,7 +463,7 @@ func main() {
 			if fetchDetails() {
 				PrintParams()
 			}
-			if video == "" {
+			if video != "" {
 				downloadVideo()
 			}
 		}
