@@ -164,12 +164,12 @@ func PrintParams() {
 }
 
 // Check if No results found
-func ResultCheckZero(length int, FLAG, query string) bool {
+func emptyResult(length int, FLAG, query string) bool {
 	if length == 0 {
 		boldred.Printf("Could not find any results for %v: %v\n", FLAG, query)
-		return false
+		return true
 	}
-	return true
+	return false
 }
 
 func downloadVideo() {
@@ -273,7 +273,6 @@ func fetchDetails() bool {
 	if err {
 		return false
 	}
-
 	extractregex := regexp.MustCompile(">(.|\n)*?<")
 
 	// Extract Synopsis
@@ -291,6 +290,11 @@ func fetchDetails() bool {
 	// Extract synopsis
 	result := synopsisre.FindAllString(resp, 1)
 	synopsisres = extractregex.FindAllString(result[0], -1)
+
+	if emptyResult(len(synopsisres), "-synopsis", "true") {
+		return false
+	}
+
 	synopsisres[0] = synopsisres[0][1 : len(synopsisres[0])-1]
 	rep := [][]string{{"<", ""}, {">", ""}}
 
@@ -301,6 +305,11 @@ func fetchDetails() bool {
 
 	// Extract score
 	result = scorere.FindAllString(resp, 1)
+
+	if emptyResult(len(result), "-score", "true") {
+		return false
+	}
+
 	scoreres = result[0]
 
 	// Extract info
@@ -383,6 +392,7 @@ func Search() bool {
 			// set anime url to fetch results
 			AnimeURL = res[0]
 			foundAnime = true
+			break
 		}
 		animeUrlMap[res[1]] = true
 	}
@@ -398,11 +408,15 @@ func Search() bool {
 		}
 	}
 
-	// Search for episode videos
+	// if no video parameters set return true if AnimeURL was found
 	if video == "" {
+		if foundAnime {
+			return true
+		}
 		return false
 	}
 
+	// Search for episode videos
 	searchName := strings.Replace(name, " ", "%20", -1)
 	searchURL = VIDEOsearch + searchName
 	resp, err = getContent(searchURL)
@@ -415,7 +429,7 @@ func Search() bool {
 	re3 := regexp.MustCompile(regex)
 	resultsVideo := re3.FindAllStringSubmatch(resp, -1)
 
-	if !ResultCheckZero(len(resultsVideo), "-video", name) {
+	if emptyResult(len(resultsVideo), "-video", name) {
 		return false
 	}
 
