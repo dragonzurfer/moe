@@ -1,7 +1,7 @@
 ![Reading 6th Grade Level](http://forthebadge.com/images/badges/reading-6th-grade-level.svg)
 ![No Ragrets](http://forthebadge.com/images/badges/no-ragrets.svg)
 <p align="center">
-  <img width="160" height="160" src="https://github.com/ashleymcnamara/gophers/blob/master/GO_BUILD.png?raw=true">
+  <img width="300" height="300" src="https://github.com/ashleymcnamara/gophers/blob/master/GO_BUILD.png?raw=true">
 </p>
 
 # moe
