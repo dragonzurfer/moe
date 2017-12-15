@@ -172,7 +172,7 @@ func emptyResult(length int, FLAG, query string) bool {
 	return false
 }
 
-func downloadVideo() {
+func fetchVideoURL() {
 	// Get number of episodes on AnimeVideoURL page and set from and to
 	var from, to int
 	var err1, err2 error
@@ -250,6 +250,11 @@ func downloadVideo() {
 		to = totalEpisodes
 	}
 	fmt.Println(from, to)
+
+	// show video urls
+	for i := from; i <= to; i++ {
+		boldgreen.Println(episodeURL[i], ":Episode", i)
+	}
 }
 
 // fetch seasonl animes
@@ -475,7 +480,7 @@ func Search() bool {
 				break
 			}
 		}
-		if cleanname == searchName {
+		if cleanname == name {
 			foundVideoAnime = true
 			AnimeVideoURL = anime[0]
 			return true
@@ -508,7 +513,7 @@ func main() {
 				PrintParams()
 			}
 			if video != "" {
-				downloadVideo()
+				fetchVideoURL()
 			}
 		}
 	} else if seasonal != "" {
