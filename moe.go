@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/fatih/color"
-	"github.com/jaytaylor/html2text"
+	"jaytaylor.com/html2text"
 	"html"
 	"io/ioutil"
 	"net/http"
