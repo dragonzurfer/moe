@@ -96,7 +96,13 @@ func Rep(s *string, rep [][]string) {
 
 // Print to terminal
 func PrintParams() {
-
+	var pluralKeys = map[string]bool {
+		"Synonyms": true,
+		"Genres": true,
+		"Producers": true,
+		"Licensors": true,
+		"Studios": true,
+	}
 	if info || all {
 		boldblue.Printf("Information\n------------\n")
 		for key, value := range infores {
@@ -107,6 +113,9 @@ func PrintParams() {
 			if key == "Score" {
 				boldgreen.Printf(":  %v\n", scoreres)
 				continue
+			}
+			if _, ok := pluralKeys[key]; ok {
+				value = strings.Replace(value, "  , ", ", ", -1)
 			}
 			boldwhite.Printf(": %v\n", value)
 		}
